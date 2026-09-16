@@ -7,17 +7,37 @@ no: 150x150mm board.
   - UI Teensy: ST7796 TFT + XPT2046 touch header, plus BOTH sensor UART links
     (Serial1 pins 0/1 to Sensor A, Serial3 pins 14/15 to Sensor B)
 
-*** VERIFY BEFORE ROUTING OR FABRICATING ***
-TEENSY_ROW1 / TEENSY_ROW2 below are my best-effort reconstruction of the
-Teensy 4.1's physical pin order from memory, not copied from the datasheet
-in front of me. The mechanical dimensions (61mm long, two rows 17.78mm/0.7in
-apart, 2.54mm pitch) I'm confident about — that's just the standard DIP-style
-socket spacing every Teensy 4.1 carrier uses. The pin ORDER in each row is
-what needs checking against the official pinout card before you rely on it:
-https://www.pjrc.com/teensy/pinout.html
-If a pin turns out to be in the wrong slot, the fix is just editing these
-two lists and re-running — nothing else in the script depends on the
-specific values, only on the lists being internally consistent.
+*** PINOUT NOW VERIFIED AGAINST A REAL TEENSY 4.1 PHOTO ***
+TEENSY_ROW1 / TEENSY_ROW2 below were corrected from an actual photo of the
+board's silkscreen (my first pass was reconstructed from memory and had
+real errors — no VIN pin exists in the main rows, it's 5V; pin 13 was
+missing from row 1; row 2 runs 0-12 consecutively before 3.3V, not the
+"0,1 then jump to 24" order I'd guessed). Still worth a final glance
+against https://www.pjrc.com/teensy/pinout.html since I'm reading this off
+one photo, not the datasheet — but confidence is much higher now. If
+anything's still off, the fix is editing these two lists and re-running;
+nothing else depends on the specific values, only on internal consistency.
+
+Two things this correction changed, beyond the tables themselves:
+  - Cal/curve buttons (pins 3, 4) are on ROW2, not ROW1 as I'd assumed —
+    build_button() now checks which row a pin is actually on and offsets
+    away from the Teensy body accordingly, instead of always assuming ROW1.
+  - The TFT header's 8 signal pins are NOT all on one row: 7 of them
+    (T_CS/T_IRQ/DC/RST/CS/MOSI/MISO — pins 6,7,8,9,10,11,12) are on ROW2,
+    and only SCK (pin 13) is on ROW1. build_tft_header() now auto-routes
+    the 7 ROW2 pins from a header placed below ROW2, and leaves SCK as a
+    manual bridge (net-matched only) since reaching it means crossing
+    under ROW2 — same reasoning as everything else left manual below.
+
+SINGLE-SIDED COPPER: this board has one copper layer, so nothing can cross
+anything else in copper — no vias, no routing under a row of pads. Every
+connection listed below as "not auto-routed" will very likely need an
+actual insulated wire jumper on the component side, not a hand-drawn PCB
+trace, since a flat copper trace can't cross the Teensy's other pin row
+(or another trace) without shorting. This script sets the board to 1
+copper layer (see the bottom of the __main__ block) specifically so
+KiCad's DRC and interactive router enforce that reality instead of
+assuming a second layer bails you out.
 
 WHAT THIS SCRIPT DOES vs LEAVES FOR YOU (same philosophy as the sensor-board
 script this follows on from):
@@ -26,18 +46,17 @@ script this follows on from):
     resistors + diodes, same divider circuit as your velostat/piezo boards),
     4 cal/curve buttons, the TFT+touch header, and 4 mounting holes.
   - Auto-routes ONLY short, local, single-purpose traces: header->resistor
-    (or header->R1) inside each channel, and the TFT header straight down
-    into the UI Teensy (this one's safe because the header sits directly
-    above ROW1 with nothing else in between — see build_tft_header).
+    (or header->R1) inside each channel, and the 7 ROW2 pins of the TFT
+    header (see above).
   - Everything else — each channel's signal net reaching its Teensy analog
-    pin, the two UART links between Teensysays, buttons reaching their
-    Teensy pins, and every Teensy's power pins reaching the bus bars — is
-    given a matching net name (so KiCad's ratsnest will show you exactly
-    where a wire needs to go) but is NOT drawn as a trace. Routing those
-    would mean crossing under ROW2 to reach ROW1 pins, which isn't a
-    straight-line job I want to guess at without being able to check DRC
-    myself. Run Inspect > DRC to see the ratsnest and route those by hand
-    (or with KiCad's interactive router) once you've confirmed the pinout.
+    pin, the two UART links between the sensor Teensys and the UI Teensy,
+    buttons reaching their Teensy pins, the TFT header's SCK pin, and
+    every Teensy's power pins reaching the bus bars — is given a matching
+    net name (so KiCad's ratsnest will show you exactly where a wire needs
+    to go) but is NOT drawn as a trace, because it means crossing under
+    the Teensy's other pin row and I'd rather you route it with DRC
+    watching than have me guess at a path. Run Inspect > DRC to see the
+    ratsnest and route those by hand (or with the interactive router).
 
 FIRMWARE NOTE: the UIFirmware_Arduino.ino you shared only reads Serial1
 today (one sensor Teensy). This board wires up a second UART (Serial3,
@@ -57,33 +76,40 @@ FOOTPRINT_LIB_DIR = os.environ.get(
 ).rstrip("\\/")
 
 BOARD_W = 150.0
-BOARD_H = 150.0
+BOARD_H = 180.0  # +30mm vs the original 150x150 — see space note below
 
 PIN_PITCH = 2.54
 ROW_GAP = 17.78  # 0.7in between a Teensy's two pin rows — mechanically fixed
 
-# --- Teensy 4.1 pin tables (see disclaimer above) ---
+# --- Teensy 4.1 pin tables (photo-verified, see disclaimer above) ---
 # Index 0 = the end nearest the USB connector.
-TEENSY_ROW1 = ["GND", "3V3", "23", "22", "21", "20", "19", "18", "17", "16",
-               "15", "14", "13", "12", "11", "10", "9", "8", "7", "6",
-               "5", "4", "3", "2"]
-TEENSY_ROW2 = ["VIN", "GND", "0", "1", "24", "25", "26", "27", "28", "29",
-               "30", "31", "32", "33", "34", "35", "36", "37", "38", "39",
-               "40", "41", "GND", "3V3"]
+TEENSY_ROW1 = ["5V", "GND", "3V3", "23", "22", "21", "20", "19", "18", "17",
+               "16", "15", "14", "13", "GND", "41", "40", "39", "38", "37",
+               "36", "35", "34", "33"]
+TEENSY_ROW2 = ["GND", "0", "1", "2", "3", "4", "5", "6", "7", "8",
+               "9", "10", "11", "12", "3V3", "24", "25", "26", "27", "28",
+               "29", "30", "31", "32"]
 
 # --- Zone origins (x0,y0 = position of ROW1 index 0 / the USB end) ---
+# Board grew from 150x150 to 150x180 so the channel stacks and the UI
+# Teensy have real breathing room between them — that gap is exactly where
+# you'll want to work when routing the channel->pin and UART ratsnest by
+# hand or with KiCad's interactive router, and cramped spacing there was
+# the main thing worth spending the extra room on (see the routing note
+# at the top of this file for why those connections are left as ratsnest
+# rather than auto-routed).
 TEENSY_A_X, TEENSY_A_Y = 8.0, 10.0
 TEENSY_B_X, TEENSY_B_Y = 85.0, 10.0
-TEENSY_UI_X, TEENSY_UI_Y = 8.0, 125.0
+TEENSY_UI_X, TEENSY_UI_Y = 8.0, 135.0
 
 VELO_X = 15.0
 VELO_Y_START = 38.0
-VELO_ROW_SPACING = 9.0
+VELO_ROW_SPACING = 10.0  # was 9.0 — a bit more room per row for hand-soldering
 VELO_R_OFFSET_X = 6.0
 
 PIEZO_X = 95.0
 PIEZO_Y_START = 38.0
-PIEZO_ROW_SPACING = 11.5  # same as the original sensor-board script
+PIEZO_ROW_SPACING = 13.0  # was 11.5 — same reasoning as VELO_ROW_SPACING
 PIEZO_R1_OFFSET_X = 6.0
 PIEZO_R2_OFFSET_Y = 4.0
 PIEZO_DIODE_OFFSET_X = 20.0
@@ -91,7 +117,7 @@ PIEZO_DIODE_OFFSET_Y = -4.0
 
 BUS_3V3_X = 3.0
 BUS_GND_X = 147.0
-BUS_Y0, BUS_Y1 = 5.0, 148.0
+BUS_Y0, BUS_Y1 = 5.0, 175.0
 
 LAYER_EDGE = pcbnew.Edge_Cuts
 
@@ -264,15 +290,20 @@ def build_piezo_channel(board, teensy, teensy_pin, cx, cy, idx, group):
 
 
 def build_button(board, teensy, teensy_pin, ref, y_offset=4.0):
-    """Places a 2-pin push button just below the Teensy's ROW2, aligned to
-    the X position of teensy_pin (read back from the actual placed pad, so
-    this stays correct even if the absolute pin table has an error)."""
+    """Places a 2-pin push button just outside whichever row teensy_pin is
+    actually on (ROW1 pins get pulled up above the Teensy, ROW2 pins get
+    pushed down below it), aligned to the pin's real X position read back
+    from the placed pad. Checking the row instead of assuming ROW2 is what
+    catches cases like pins 3/4, which turned out to be on ROW2 here."""
     net_gnd = get_or_create_net(board, "GND")
     net_sig = get_or_create_net(board, f"BTN_{ref}")
 
     tpad = teensy.pad(teensy_pin)
     cx = x_of(tpad)
-    cy = y_of(tpad) + ROW_GAP + y_offset  # ROW2 sits ROW_GAP below ROW1
+    if teensy_pin in TEENSY_ROW1:
+        cy = y_of(tpad) - y_offset  # open space is above ROW1
+    else:
+        cy = y_of(tpad) + y_offset  # open space is below ROW2
 
     btn = load_footprint(board, "Button_Switch_THT", "SW_PUSH_6mm", cx, cy, ref=ref)
     # SW_PUSH_6mm has 4 pads (two bridged pairs). Pads 1 & 3 are the two
@@ -286,31 +317,41 @@ def build_button(board, teensy, teensy_pin, ref, y_offset=4.0):
 
 
 def build_tft_header(board, ui_teensy):
-    """1x8 signal header placed directly above the UI Teensy's ROW1, so the
-    connection down into ROW1 is a straight vertical run with nothing else
-    in between — the one cross-board connection this script auto-routes."""
+    """1x8 signal header placed just below the UI Teensy's ROW2. Of the 8
+    TFT/touch pins, 7 (T_CS/T_IRQ/DC/RST/CS/MOSI/MISO — pins 6-12) are on
+    ROW2, so those get placed directly above their targets and auto-routed
+    straight up. SCK (pin 13) is the one outlier on ROW1 — it gets a header
+    pad and a matching net, but reaching it means crossing under ROW2, so
+    it's left as a ratsnest connection like everything else in that
+    category (see the header comment)."""
     net_3v3 = get_or_create_net(board, "3V3")
     net_gnd = get_or_create_net(board, "GND")
-
-    # Ascending-X order on ROW1: SCK(13), MISO(12), MOSI(11), CS(10),
-    # RST(9), DC(8), T_IRQ(7, unused), T_CS(6). This ordering is guaranteed
-    # by TEENSY_ROW1's internal consistency, not by hand-picked coordinates.
-    pins_order = ["13", "12", "11", "10", "9", "8", "7", "6"]
     func_names = {"13": "SCK", "12": "MISO", "11": "MOSI", "10": "CS",
                   "9": "RST", "8": "DC", "7": "T_IRQ", "6": "T_CS"}
 
-    first_pad = ui_teensy.pad(pins_order[0])
-    hx = x_of(first_pad)
-    hy = y_of(first_pad) - 10.0  # 10mm above ROW1
+    # Ascending-X order on ROW2 for the 7 pins that live there. Guaranteed
+    # by TEENSY_ROW2's internal consistency, not hand-picked coordinates.
+    row2_pins = ["6", "7", "8", "9", "10", "11", "12"]
+
+    first_pad = ui_teensy.pad(row2_pins[0])
+    hx = x_of(first_pad) - PIN_PITCH  # leave one slot to the left for SCK
+    hy = y_of(first_pad) + 10.0  # 10mm below ROW2 — the open/outer side
 
     hdr = load_footprint(board, "Connector_PinHeader_2.54mm", "PinHeader_1x08_P2.54mm_Vertical",
                           hx, hy, ref="J_TFT")
-    for i, pin in enumerate(pins_order):
+
+    # Pad 0 = SCK (pin 13, on ROW1) — ratsnest only.
+    net_sck = get_or_create_net(board, "TFT_SCK")
+    hdr.Pads()[0].SetNet(net_sck)
+    ui_teensy.pad("13").SetNet(net_sck)
+
+    # Pads 1-7 = the 7 ROW2 pins, auto-routed straight up.
+    for i, pin in enumerate(row2_pins):
         net = get_or_create_net(board, f"TFT_{func_names[pin]}")
-        hdr.Pads()[i].SetNet(net)
+        hdr.Pads()[i + 1].SetNet(net)
         tpad = ui_teensy.pad(pin)
         tpad.SetNet(net)
-        route(board, hdr.Pads()[i], tpad)  # straight down, safe
+        route(board, hdr.Pads()[i + 1], tpad)  # straight up, safe
 
     # Separate 2-pin power header for the display module, just to the left
     # of the signal header — left as manual bridges to the bus bars.
@@ -323,6 +364,7 @@ def build_tft_header(board, ui_teensy):
 
 if __name__ == "__main__":
     board = pcbnew.GetBoard()
+    board.SetCopperLayerCount(1)  # single-sided copper — see note at top of file
 
     # --- Bus bars ---
     draw_bus(board, BUS_3V3_X, BUS_Y0, BUS_Y1, "3V3")
@@ -384,7 +426,7 @@ if __name__ == "__main__":
     seg(board, 0, BOARD_H, 0, 0, LAYER_EDGE)
 
     # --- Mounting holes (corners) ---
-    for i, (mx, my) in enumerate([(5, 5), (145, 5), (5, 145), (145, 145)]):
+    for i, (mx, my) in enumerate([(5, 5), (145, 5), (5, 175), (145, 175)]):
         load_footprint(board, "MountingHole", "MountingHole_3.2mm_M3", mx, my, ref=f"MH{i + 1}")
 
     pcbnew.Refresh()
@@ -392,17 +434,20 @@ if __name__ == "__main__":
     print("Placed: 3x Teensy 4.1 socket, 9x velostat channel, 7x piezo channel,")
     print("4x cal/curve button, 1x TFT+touch header, 4x mounting hole.")
     print("")
-    print("Manual bridges still needed (ratsnest will show these after DRC):")
+    print("Manual bridges still needed — this is a single copper layer, so these")
+    print("will very likely be actual wire jumpers on the component side, not")
+    print("hand-drawn PCB traces (ratsnest will show you every one after DRC):")
     print(" - Each velostat channel: R.pad2 (GND) -> GND bus")
     print(" - Each piezo channel: R1.pad2->R2.pad1, R1.pad2->D anode,")
     print("   R2.pad2 (GND) and hdr.pad2 (GND) -> GND bus, D cathode -> 3V3 bus")
     print(" - Every channel's signal net -> its Teensy analog pin (A0-A8 on")
-    print("   Sensor A, A0-A6 on Sensor B) — crosses under ROW2, not auto-routed")
+    print("   Sensor A, A0-A6 on Sensor B)")
     print(" - Cal/curve buttons -> their Teensy pin + GND")
+    print(" - TFT header's SCK pin -> UI Teensy pin 13 (the one TFT signal on ROW1)")
     print(" - Each Teensy's GND/3V3 pads -> the bus bars")
     print(" - UART_A_1/2 (Sensor A <-> UI Serial1) and UART_B_1/2")
-    print("   (Sensor B <-> UI Serial3) — long cross-board runs, not auto-routed")
+    print("   (Sensor B <-> UI Serial3)")
     print("")
-    print("BEFORE ROUTING OR ORDERING: verify TEENSY_ROW1 / TEENSY_ROW2 against")
-    print("the official Teensy 4.1 pinout (pjrc.com/teensy/pinout.html) — see")
-    print("the disclaimer at the top of this file. Run Inspect > DRC next.")
+    print("Pinout was corrected against a real Teensy 4.1 photo (see the top of")
+    print("this file) — worth one more glance at pjrc.com/teensy/pinout.html")
+    print("before ordering, but confidence is high. Run Inspect > DRC next.")

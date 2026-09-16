@@ -1,0 +1,29 @@
+# KiCad backups and autosave
+*.bak
+*.kicad_pcb-bak
+*.kicad_sch-bak
+*-backups/
+_autosave-*
+*-save.kicad_pcb
+*-save.kicad_sch
+
+# KiCad lock files and caches
+*.lck
+fp-info-cache
+
+# KiCad project user settings (machine-specific)
+*.kicad_prl
+
+# Fabrication output (gerbers, drill files, etc.)
+gerbers/
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db

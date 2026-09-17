@@ -1,0 +1,100 @@
+(footprint "SolderPad_1x01"
+	(version 20241229)
+	(generator "jaiba-make_library")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "Bare 4.0 x 2.2 mm copper pad for soldering a drum-pad cable")
+	(tags "solder pad strain relief drum cable")
+	(attr smd)
+	(property "Reference" "REF**"
+		(at 0 -2.38 0)
+		(layer "F.SilkS")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "SolderPad_1x01"
+		(at 0 2.38 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -2.0 -1.2)
+		(end 2.0 -1.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "9b3d6ba5-9b44-4d7d-acd8-530e838a4d94")
+	)
+	(fp_line
+		(start 2.0 -1.2)
+		(end 2.0 1.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "f6774d94-b572-48c6-85b9-32c50b69dfc3")
+	)
+	(fp_line
+		(start 2.0 1.2)
+		(end -2.0 1.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "7dbb653f-2ff5-4de3-939b-637667c96d81")
+	)
+	(fp_line
+		(start -2.0 1.2)
+		(end -2.0 -1.2)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "ddbd9ea7-2bf6-411e-b04e-ae3e99f61c3a")
+	)
+	(pad "1" smd rect
+		(at 0 0)
+		(size 4 2)
+		(layers "F.Cu" "F.Mask")
+		(roundrect_rratio 0)
+		(uuid "c415d547-0bfa-476f-913d-44ef122b4e89")
+	)
+	(embedded_fonts no)
+)

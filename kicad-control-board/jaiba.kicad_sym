@@ -1,0 +1,531 @@
+(kicad_symbol_lib
+	(version 20241209)
+	(generator "jaiba-make_mux_symbol")
+	(generator_version "9.0")
+	(symbol "CD74HC4067"
+		(pin_names (offset 1.016))
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(property "Reference" "U"
+			(at 0 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+			(uuid "801626a8-e174-42fb-8ec3-283f0321948f")
+		)
+		(property "Value" "CD74HC4067"
+			(at 0 22.86 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+			(uuid "9ccb3b42-5158-4da2-abd5-c5193e422378")
+		)
+		(property "Footprint" "jaiba:CD74HC4067_Module"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+			(uuid "ed0c2f31-d408-420e-98dc-33b353e22f62")
+		)
+		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/cd74hc4067.pdf"
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+			(uuid "5d1fe80c-f3df-4eeb-afbd-d76aabfdf975")
+		)
+		(property "Description" "16-channel analog multiplexer/demultiplexer breakout module (C0-C15, SIG, S0-S3, EN, VCC, GND). Pin numbers are the module's pin names, so they map 1:1 onto the module footprint's pads."
+			(at 0 0 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+			(uuid "9878e675-9915-4695-90c0-f949f82b9741")
+		)
+		(symbol "CD74HC4067_0_1"
+			(rectangle
+				(start -15.24 21.59)
+				(end 15.24 -21.59)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type background)
+				)
+				(uuid "77e20f1e-3c6d-4fc8-b624-921ad249b218")
+			)
+		)
+		(symbol "CD74HC4067_1_1"
+			(pin passive line
+				(at -19.05 19.05 0)
+				(length 3.81)
+				(name "C0"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C0"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "c6e06610-2811-4b3f-b08a-9fad579b5b43")
+			)
+			(pin passive line
+				(at -19.05 16.51 0)
+				(length 3.81)
+				(name "C1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "9affc046-871a-42c6-8a35-b88c544a0938")
+			)
+			(pin passive line
+				(at -19.05 13.97 0)
+				(length 3.81)
+				(name "C2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "508aaf7b-abd0-4341-98b4-371bf6108557")
+			)
+			(pin passive line
+				(at -19.05 11.43 0)
+				(length 3.81)
+				(name "C3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "4d017ed3-c387-4605-9330-a18b64ced871")
+			)
+			(pin passive line
+				(at -19.05 8.89 0)
+				(length 3.81)
+				(name "C4"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C4"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "1b1a74fc-183d-4002-a65d-87d73767138d")
+			)
+			(pin passive line
+				(at -19.05 6.35 0)
+				(length 3.81)
+				(name "C5"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C5"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "f4a92c60-ae15-436e-a250-3ac67fd4cc6d")
+			)
+			(pin passive line
+				(at -19.05 3.81 0)
+				(length 3.81)
+				(name "C6"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C6"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "241466c2-cc7a-489e-820f-91ed406b47d7")
+			)
+			(pin passive line
+				(at -19.05 1.27 0)
+				(length 3.81)
+				(name "C7"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C7"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "ab01350f-b9d4-45dc-8412-cf746f47ecbb")
+			)
+			(pin passive line
+				(at -19.05 -1.27 0)
+				(length 3.81)
+				(name "C8"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C8"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "5de5f089-fd4b-4123-9499-f7ab355154e4")
+			)
+			(pin passive line
+				(at -19.05 -3.81 0)
+				(length 3.81)
+				(name "C9"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C9"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "337a5095-d958-4f7e-bdf8-bdbd03166e09")
+			)
+			(pin passive line
+				(at -19.05 -6.35 0)
+				(length 3.81)
+				(name "C10"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C10"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "7322bc56-d317-4941-b478-d26382027150")
+			)
+			(pin passive line
+				(at -19.05 -8.89 0)
+				(length 3.81)
+				(name "C11"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C11"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "f96070dc-d67d-4505-8108-88ec85822bc9")
+			)
+			(pin passive line
+				(at -19.05 -11.43 0)
+				(length 3.81)
+				(name "C12"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C12"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "7fb55e93-4553-4a2d-a50f-a2d549858793")
+			)
+			(pin passive line
+				(at -19.05 -13.97 0)
+				(length 3.81)
+				(name "C13"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C13"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "1eb918b0-eadf-482d-ada4-24306525e9e5")
+			)
+			(pin passive line
+				(at -19.05 -16.51 0)
+				(length 3.81)
+				(name "C14"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C14"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "97d2ff41-f30f-46a7-8172-6060a4fa119e")
+			)
+			(pin passive line
+				(at -19.05 -19.05 0)
+				(length 3.81)
+				(name "C15"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "C15"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "4ce7fc40-1b2a-4e93-8150-97e7179a1f49")
+			)
+			(pin passive line
+				(at 19.05 8.89 180)
+				(length 3.81)
+				(name "SIG"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "SIG"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "9111ffdc-554b-4513-b150-49c5e9113c98")
+			)
+			(pin input line
+				(at 19.05 6.35 180)
+				(length 3.81)
+				(name "S0"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "S0"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "fca57bde-6cce-4e27-b3f8-a154e4a10ab4")
+			)
+			(pin input line
+				(at 19.05 3.81 180)
+				(length 3.81)
+				(name "S1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "S1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "b9c348d6-f8cf-425f-99d4-e3a0b3db8893")
+			)
+			(pin input line
+				(at 19.05 1.27 180)
+				(length 3.81)
+				(name "S2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "S2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "7477e406-07c2-4ecd-b71b-446120a4696b")
+			)
+			(pin input line
+				(at 19.05 -1.27 180)
+				(length 3.81)
+				(name "S3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "S3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "118455b6-ed2e-46a9-b920-f86ab61862e4")
+			)
+			(pin input line
+				(at 19.05 -3.81 180)
+				(length 3.81)
+				(name "EN"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "EN"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "e49faf7e-1090-4e5e-b0dd-e71a41dc91b2")
+			)
+			(pin power_in line
+				(at 19.05 -6.35 180)
+				(length 3.81)
+				(name "VCC"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "VCC"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "4d8f5106-1de6-4943-a428-e8871fdb865f")
+			)
+			(pin power_in line
+				(at 19.05 -8.89 180)
+				(length 3.81)
+				(name "GND"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "GND"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(uuid "5d327b46-91bd-4dfd-bcf6-0264896e6d2b")
+			)
+		)
+	)
+)

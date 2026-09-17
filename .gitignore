@@ -11,6 +11,9 @@ _autosave-*
 *.lck
 fp-info-cache
 
+# KiCad's local file-history store (its own nested git repo, not project source)
+.history/
+
 # KiCad project user settings (machine-specific)
 *.kicad_prl
 

@@ -113,11 +113,15 @@ by the Teensy and move only the connector out to the edge.
 
 ## Board geometry
 
-* **168 × 240 mm**, two copper layers in KiCad's stackup. (Was 160 wide; the
-drum solder pads pushed the second column past the edge by 0.15 mm.)
+* **150 × 260 mm**, two copper layers in KiCad's stackup. Fixed by the enclosure,
+  so it is a constraint rather than an outcome. Reaching 150 wide was a re-flow
+  of the left region, not of the cell columns: the old layout had ~30 mm of dead
+  space between the Teensys and the buses. The extra 20 mm of height went into
+  the cell row pitch (25 → 27 mm) and the button cluster.
 * Rows are **15.24 mm apart** (0.6"), pin span 58.42 mm, board 60.96 × 17.78 mm.
   (0.7" is the *board width*, not the row pitch — an earlier revision used
   17.78 mm as `ROW_GAP` and the sockets could not line up with a real Teensy.)
+* Power buses run the full height at x = 66 mm (3V3) and x = 71 mm (GND).
 * Mounting holes at 6 mm in from each corner.
 
 ## Sensor front-ends
@@ -163,16 +167,6 @@ ROW2: GND, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 3V3, 24, 25, 26, 27, 28, 29
 ```
 
 The 5 V pin is the pin PJRC calls VIN; there is no VIN pad in either main row.
-
-## Board geometry
-
-* **168 × 240 mm**, two copper layers in KiCad's stackup. (Was 160 wide; the
-drum solder pads pushed the second column past the edge by 0.15 mm.)
-* Rows are **15.24 mm apart** (0.6"), pin span 58.42 mm, board 60.96 × 17.78 mm.
-  (0.7" is the *board width*, not the row pitch — an earlier revision used
-  17.78 mm as `ROW_GAP` and the sockets could not line up with a real Teensy.)
-* Power buses run the full height at x = 92 mm (3V3) and x = 100 mm (GND).
-* Mounting holes at 6 mm in from each corner.
 
 ### Copper sizes for home etching
 
@@ -239,7 +233,7 @@ runs. Run **Inspect → DRC** to see them as ratsnest.
 | `jaiba_board_layout.py` | **Source of truth.** Pure-Python placement + net plan, no `pcbnew`. |
 | `jaiba-kicad-controlboard.py` | Applies the plan via `pcbnew`; run inside KiCad's Scripting Console. |
 | `kicad-control-board/jaiba.pretty/` | Project-local footprint library — self-contained, no KiCad system libs. |
-| `kicad-control-board/*.kicad_pcb` | Generated board (168 × 240 mm, 278 footprints, 584 pads). |
+| `kicad-control-board/*.kicad_pcb` | Generated board (150 × 260 mm, 281 footprints, 612 pads). |
 | `tools/make_library.py` | Rebuilds `jaiba.pretty/` by lifting footprints out of the board. |
 | `tools/make_teensy_footprint.py` | Generates `Teensy_4.1.kicad_mod` from PJRC's published dimensions. |
 | `tools/emit_board.py` | Writes the `.kicad_pcb` from the plan **without** KiCad. |
@@ -302,11 +296,12 @@ The drum cable takes all the movement, so each of its four lands on its own bare
 copper pad rather than only on a 2.2 mm through-hole pad. **74 pads** — four per
 dual-layer cell (3V3, VELO, PRAW, GND) and two per loop cell.
 
-They are `SolderPad_1x01`: a **4.0 × 2.0 mm rectangle of exposed copper**
+They are `SolderPad_1x01`: an **8.0 × 2.0 mm rectangle of exposed copper**
 (`F.Cu` + `F.Mask` only — no paste layer, because there is no stencil), sitting
 just outboard of each cell's connector and fed by a straight horizontal stub
-from its pin. That gives **3.1× the soldering area** per connection, and you can
-solder the wire along a 4 mm run of copper instead of onto one small pad.
+from its pin. Per connection that is 3.8 mm² of through-hole pad plus 16.0 mm² of
+rectangle — **19.8 mm², 5.2× the round pad alone** — and an **8 mm run of copper**
+to solder the wire along rather than one small pad.
 
 Two constraints shaped it:
 
@@ -314,13 +309,18 @@ Two constraints shaped it:
   left and the cell edge 0.8 mm to its right, so every vertical channel inside
   the cell is blocked. Outboard of the connector is the only clear space — which
   also happens to be the side the drum cable arrives from.
-* **2.0 mm tall, not 2.2.** Adjacent pins are 2.54 mm apart; anything taller made
-  neighbouring courtyards touch.
+* **2.0 mm tall, not more.** Adjacent pins are 2.54 mm apart, so the height is
+  capped at ~2.34 mm before neighbouring courtyards touch. The 2.4 mm courtyard
+  leaves 0.14 mm between them.
+* **8 mm is the length limit in practice** — and only because of where the pads
+  land, not a rule. At 8 mm the rightmost pad ends 9.5 mm short of the edge.
 
 Being surface-mount, these add **no holes** — the drill count is unchanged.
 
-The board grew to **168 mm wide** for them: at 160 the second column's pads would
-have overhung the edge by 0.15 mm.
+The 8 mm length pushed the loop cells' jumper pads out of the strip they shared
+with the drum pads, so those moved below (row pitch 8 → 11 mm) and column B moved
+110 → 114 mm to keep the aisle between the columns. The left region absorbed the
+rest of the squeeze to 150 mm wide, leaving both cell columns where they are.
 
 ## Wire landing pads
 
@@ -416,6 +416,39 @@ generated board**, so its formatting style feeds back into the library and then
 into the next generation. That is self-correcting now that the emitter writes
 canonically, but if the board file is ever hand-edited into a non-canonical
 style, re-running the chain will propagate it.
+
+## Encoder expansion headers
+
+The UI Teensy has **26 free digital pins** broken out on three headers, so a knob
+panel can be added without soldering onto a socket pin:
+
+| | pins | carries |
+|---|---|---|
+| `J_ENC_A` | 10 | **GND, 3V3**, then Teensy 23, 22, 21, 20, 19, 18, 17, 16 |
+| `J_ENC_B` | 9 | Teensy 41, 40, 39, 38, 37, 36, 35, 34, 33 |
+| `J_ENC_C` | 9 | Teensy 24, 25, 26, 27, 28, 29, 30, 31, 32 |
+
+All 16 analog-capable pins (16–27, 38–41) are included, plus 10 digital-only ones.
+`J_ENC_A` carries the power, taken from the Teensy's own ROW1 GND and 3V3 pins, so
+no bus has to be tapped — the encoder commons can share its GND.
+
+**Why three headers and not one.** Each Teensy pin row is a wall: a track cannot
+pass between two 2.2 mm pads on a 2.54 mm pitch, so nothing can reach ROW1 from
+below. Each header therefore sits on the side of the row it serves, directly
+above or below it, and **every trace is a straight vertical** — pin for pin, no
+crossings, no jumpers, no vias.
+
+`J_ENC_A` sits 5.5 mm higher than `J_ENC_B` to squeeze between two obstacles: the
+mux's channel extension pads below it and the UART landing pad for pin 15 above.
+The header courtyard is ±1.77 (it inherits the 1×02 shell), which is what makes
+that window so narrow.
+
+### If you use potentiometers instead
+
+Encoders are digital and use no ADC. If you switch to pots, the same headers work
+— each pot wiper goes to one pin, 3V3 and GND come from `J_ENC_A`. **16 of the 26
+pins are analog-capable**, so there is no need for another multiplexer: the left
+Teensy's CD74HC4067 also still has **11 spare channels**, read over the UART.
 
 ## Open items
 

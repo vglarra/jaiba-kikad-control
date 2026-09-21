@@ -33,10 +33,8 @@ Design (see README):
 # Board
 # --------------------------------------------------------------------------
 
-# 168 wide, not 160: the drum solder pads extend each cell by ~6 mm, and at
-# 160 the second column's pads would overhang the edge by 0.15 mm.
-BOARD_W = 168.0
-BOARD_H = 240.0
+BOARD_W = 150.0
+BOARD_H = 260.0
 
 # --- copper sizes ----------------------------------------------------------
 # This board is home-etched: no solder mask, no plated barrels, and the
@@ -248,14 +246,16 @@ def loop_cell(ox, oy, cid, velo_net, mirrored=False):
         # the same column.
         jx, jy = 16.00, 2.00
         rx, ry, rot = 12.00, 4.54, 180
-        # The loop cell is only 6 mm tall, so its pad sits just past the
-        # connector, out into the aisle rather than inside the cell.
-        pads = [(20.50, 4.54, velo_net, "VELO")]
+        # The 8 mm drum pad now occupies the strip the jumper pad used to sit
+        # in, so the jumper pad drops below it. That needs the loop row pitch at
+        # 11 mm rather than 8 so the next cell still clears.
+        pads = [(SOLDER_OFFSET_X, 7.20, velo_net, "VELO")]
         drum = [(2.00, "3V3", "1"), (4.54, velo_net, "2")]
-        drum_x = LOOP_SOLDER_X
+        drum_x = SOLDER_OFFSET_X
         trk = [dict(x1=ox + 16.00, y1=oy + 4.54, x2=ox + 12.00, y2=oy + 4.54,
                     net=velo_net),
-               dict(x1=ox + 16.00, y1=oy + 4.54, x2=ox + 20.50, y2=oy + 4.54,
+               dict(x1=ox + SOLDER_OFFSET_X, y1=oy + 4.54,
+                    x2=ox + SOLDER_OFFSET_X, y2=oy + 7.20,
                     net=velo_net)] + [
                dict(x1=ox + SOLDER_EXIT, y1=oy + y, x2=ox + drum_x, y2=oy + y,
                     net=net) for y, net, _ in drum]
@@ -361,44 +361,52 @@ N_LOOP = 5           # loop-control sensors, velostat-only, behind the mux
 # when the cells sat directly above ROW1. They are jumpers either way on a
 # single-sided board.
 #
-#   +----------------------------------------------------+
-#   |  U_R  [buttons]                        colA   colB |
-#   |  U_L  [buttons]   U_MUX                  ||     || |
-#   |  U_UI [TFT]                              ||     || |
-#   +----------------------------------------------------+
+#   +--------------------------------------------------+
+#   |  U_R                                    colA colB |
+#   |  U_L     U_MUX                           ||    || |
+#   |  U_UI [TFT]                              ||    || |
+#   |  [buttons]                                       |
+#   +--------------------------------------------------+
 # (BOARD_W / BOARD_H are declared once, at the top of the module.)
 
-TEENSY_X = 36.0                      # Teensy origin; body spans x 5.27..66.73
+# x = 32 puts the body at 1.27..62.73, which is as far left as it can go. The
+# whole left region was squeezed against it to reach 150 mm wide: the old layout
+# ran TEENSY_X 36 / buses 92+100 / columns 104+136 and simply had ~30 mm of dead
+# space between the Teensys and the buses.
+TEENSY_X = 32.0
 
-# Right region: two columns of cells, 18 mm apart in x.
-COL_A_X = 104.0
-COL_B_X = 136.0
+# Right region: two columns of cells, 32 mm apart in x.
+COL_A_X = 78.0
+COL_B_X = 114.0
 COL_DUAL_Y0 = 8.0                    # first dual-layer cell row
-COL_DUAL_PITCH = 25.0                # content height is 24.02 mm
-COL_LOOP_Y0 = 210.0                  # loop cells go below the dual ones
-COL_LOOP_PITCH = 8.0                 # content height is 6.09 mm
+# 27, not 25: the target is 260 mm tall and the cells only filled 234 of it, so
+# the extra goes into the row pitch, which is also more room between drum cables.
+COL_DUAL_PITCH = 27.0                # content height is 24.02 mm
+COL_LOOP_Y0 = 222.0                  # loop cells go below the dual ones
+COL_LOOP_PITCH = 11.0                # jumper pad drops below the 8 mm drum pad
 N_DUAL_PER_COL = 8                   # 8 + 8 = 16 dual-layer sensors
 N_LOOP_COL_A = 3                     # 3 + 2 = 5 loop sensors
 N_LOOP_COL_B = 2
 
 # Buses run the full height between the two regions, where they are clear of
 # every courtyard on both sides.
-BUS_3V3_X = 92.0
-BUS_GND_X = 100.0
+BUS_3V3_X = 66.0
+BUS_GND_X = 71.0
 BUS_Y0, BUS_Y1 = 4.0, BOARD_H - 4.0
 
 # Left region: Teensys stacked, each with its own cal/curve buttons below it.
 TEENSY_R_Y = 30.0
 TEENSY_L_Y = 85.0
 TEENSY_UI_Y = 165.0
-# Cal/curve buttons. They sit clear of the pin rows and to the right, because
-# the wire landing pads now fan diagonally out below ROW2 and would otherwise
-# land inside the switches. Being off to the side also puts them somewhere a
-# finger can actually reach.
-BUTTON_X = 74.0
-BTN_DY = 7.0                         # first button, below the Teensy origin
-BTN_DY2 = 16.0                       # second, staggered so the bodies clear
-MUX_POS = (36.0, 130.0)
+# Cal/curve buttons. They used to sit to the right of each Teensy, clear of the
+# landing pads that fan below ROW2 -- but squeezing to 150 mm wide removed that
+# space entirely (the gap between the pin rows and the buses is now under 3 mm).
+# So they live in a 2x2 cluster at the bottom left, in the room the extra 20 mm
+# of height opened up, and the jumpers simply run further.
+BUTTON_X = 10.0
+BUTTON_DX2 = 18.0                    # second button of each pair
+BUTTON_Y = {"R": 206.0, "L": 226.0}
+MUX_POS = (32.0, 130.0)
 
 # Wire landing pads. Every jumper link gets its own through-hole pad beside the
 # Teensy it feeds, joined to the pin by a short F.Cu stub. Staggered so the pads
@@ -410,11 +418,10 @@ WIREPAD_FP = "WirePad_1x01"
 # on the far side of the connector where there is clear space, and each is fed
 # by a straight horizontal stub from its pin -- no fan, no crossings.
 SOLDERPAD_FP = "SolderPad_1x01"
-SOLDER_OFFSET_X = 20.5          # pad centre, relative to the cell origin
+# 8 mm pads: at offset 22.5 they start at 18.5, keeping the same 1.4 mm gap from
+# the connector's own pad that the 4 mm version had.
+SOLDER_OFFSET_X = 22.5          # pad centre, relative to the cell origin
 SOLDER_EXIT = 16.0              # the connector pin column
-# The loop cell already carries a jumper pad at SOLDER_OFFSET_X, so its drum
-# pads sit further out on the same stub (same net, so sharing it is harmless).
-LOOP_SOLDER_X = 25.0
 LANDING_BASE = 4.5      # first pad this far out from the pin row
 LANDING_STEP = 1.15     # each successive pad steps out and along by this much
 
@@ -536,12 +543,12 @@ def plan():
     # cal / curve buttons on ROW2 pins 3 and 4 of each sensor Teensy. Staggered
     # in Y because two 6 mm switches on adjacent 2.54 mm pins cannot sit side by
     # side -- the original board put both at the same Y and they overlapped.
-    for hemi, ty in (("R", TEENSY_R_Y), ("L", TEENSY_L_Y)):
+    for hemi, by in BUTTON_Y.items():
         footprints.append(dict(name=SW_FP, ref=f"SW_CAL_{hemi}", value="SW_PUSH",
-                               x=BUTTON_X, y=ty + BTN_DY, rot=0,
+                               x=BUTTON_X, y=by, rot=0,
                                nets={"1": f"BTN_CAL_{hemi}", "2": "GND"}))
         footprints.append(dict(name=SW_FP, ref=f"SW_CURVE_{hemi}", value="SW_PUSH",
-                               x=BUTTON_X, y=ty + BTN_DY2, rot=0,
+                               x=BUTTON_X + BUTTON_DX2, y=by, rot=0,
                                nets={"1": f"BTN_CURVE_{hemi}", "2": "GND"}))
         jumper("U_" + hemi, "3", f"BTN_CAL_{hemi}")
         jumper("U_" + hemi, "4", f"BTN_CURVE_{hemi}")
@@ -619,6 +626,55 @@ def plan():
                            ("SIG", "MUX_SIG", MUX_SIG_X)):
         ctrl.append((mx + xi, my + MUX_ROW_Y, net, label))
     fan_wire_pads(footprints, tracks, ctrl, 1.0, "MUX")
+
+    # --- encoder expansion headers -----------------------------------------
+    # The UI Teensy's free pins sit on two rows, and each row is a wall: a track
+    # cannot pass between two 2.2 mm pads on a 2.54 mm pitch, so nothing can
+    # reach ROW1 from below. Each header therefore sits on the side of the row
+    # it uses, directly above/below it, and every trace is a straight vertical
+    # -- pin for pin, no crossings, no jumpers, no soldering onto a socket pin.
+    #
+    # J_ENC_A carries the power as well, taken from the Teensy's own ROW1 GND
+    # and 3V3 pins, so no bus has to be tapped. B and C are signal-only; the
+    # encoder commons can share A's GND.
+    def rowx(idx):
+        return TEENSY_X - TEENSY_HALF_SPAN + idx * TEENSY_PITCH
+
+    def enc_header(ref, y, row_y, items):
+        n = len(items)
+        # rot=90: the footprint's pads run along local +Y, so a quarter turn
+        # lays them out along +X to march across the Teensy row. At rot=0 they
+        # would run straight down into the Teensy.
+        footprints.append(dict(
+            name=f"PinHeader_1x{n:02d}_P2.54mm_Vertical", ref=ref,
+            value=f"Conn_01x{n:02d}", x=rowx(items[0][1]), y=y, rot=90,
+            nets={str(i + 1): net for i, (net, _) in enumerate(items)}))
+        for net, idx in items:
+            tracks.append(dict(x1=rowx(idx), y1=row_y, x2=rowx(idx), y2=y,
+                               net=net, width=TRACK_W))
+            if net.startswith("UI"):
+                links.append(("U_UI", net[2:], net))
+
+    ROW1_Y = TEENSY_UI_Y - TEENSY_ROW_Y
+    ROW2_Y = TEENSY_UI_Y + TEENSY_ROW_Y
+    # A sits higher than B. The header courtyard is +/-1.77 (it inherits the
+    # 1x02 shell), so at y=154 A's right-hand corner clipped the UART landing
+    # pad for pin 15 at (30.73, 152.88). B cannot rise to match: above ~151 it
+    # runs into the mux's channel extension pads. A's clear window is roughly
+    # y 147.2..149.8, bounded below by those pads and above by that landing pad.
+    enc_header("J_ENC_A", 148.5, ROW1_Y,
+               [("GND", 1), ("3V3", 2)] +
+               [(f"UI{p}", i) for p, i in (("23", 3), ("22", 4), ("21", 5),
+                                           ("20", 6), ("19", 7), ("18", 8),
+                                           ("17", 9), ("16", 10))])
+    enc_header("J_ENC_B", 154.0, ROW1_Y,
+               [(f"UI{p}", i) for p, i in (("41", 15), ("40", 16), ("39", 17),
+                                           ("38", 18), ("37", 19), ("36", 20),
+                                           ("35", 21), ("34", 22), ("33", 23))])
+    enc_header("J_ENC_C", 190.0, ROW2_Y,
+               [(f"UI{p}", i) for p, i in (("24", 15), ("25", 16), ("26", 17),
+                                           ("27", 18), ("28", 19), ("29", 20),
+                                           ("30", 21), ("31", 22), ("32", 23))])
 
     # --- wire landing pads, one per jumper ---------------------------------
     add_wire_pads(footprints, tracks, jumpers,

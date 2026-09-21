@@ -242,7 +242,7 @@ def make_solder_pad():
           ["generator", ks.Quoted("jaiba-make_library")],
           ["generator_version", ks.Quoted("9.0")],
           ["layer", ks.Quoted("F.Cu")],
-          ["descr", ks.Quoted("Bare 4.0 x 2.2 mm copper pad for soldering a drum-pad cable")],
+          ["descr", ks.Quoted("Bare 8.0 x 2.0 mm copper pad for soldering a drum-pad cable")],
           ["tags", ks.Quoted("solder pad strain relief drum cable")],
           ["attr", "smd"]]
     for key, val, y, layer in (("Reference", "REF**", -2.38, "F.SilkS"),
@@ -255,17 +255,19 @@ def make_solder_pad():
                    ["layer", ks.Quoted("F.Fab")], ["hide", "yes"],
                    ["effects", ["font", ["size", "1.27", "1.27"], ["thickness", "0.15"]]]])
     fp.append(["duplicate_pad_numbers_are_jumpers", "no"])
-    # 2.0 mm tall inside a 2.4 mm courtyard: adjacent pins are 2.54 mm apart, so
-    # anything taller makes neighbouring courtyards overlap.
-    for (x1, y1, x2, y2) in ((-2.0, -1.2, 2.0, -1.2), (2.0, -1.2, 2.0, 1.2),
-                             (2.0, 1.2, -2.0, 1.2), (-2.0, 1.2, -2.0, -1.2)):
+    # 8.0 x 2.0 mm: the length is free, so it is generous -- a longer run of
+    # copper to solder the drum cable along. The height is not: adjacent pins are
+    # 2.54 mm apart, so anything over ~2.34 mm makes neighbouring courtyards
+    # overlap. 2.4 mm courtyard keeps 0.14 mm between them.
+    for (x1, y1, x2, y2) in ((-4.15, -1.2, 4.15, -1.2), (4.15, -1.2, 4.15, 1.2),
+                             (4.15, 1.2, -4.15, 1.2), (-4.15, 1.2, -4.15, -1.2)):
         fp.append(["fp_line", ["start", str(x1), str(y1)], ["end", str(x2), str(y2)],
                    ["stroke", ["width", "0.05"], ["type", "solid"]],
                    ["layer", ks.Quoted("F.CrtYd")], ["uuid", new_uuid()]])
     # F.Cu + F.Mask only: no paste layer, because there is no stencil. A bare
     # exposed copper pad is exactly what a hand-soldered wire wants.
     fp.append(["pad", ks.Quoted("1"), "smd", "rect",
-               ["at", "0", "0"], ["size", "4", "2"],
+               ["at", "0", "0"], ["size", "8", "2"],
                ["layers", ks.Quoted("F.Cu"), ks.Quoted("F.Mask")],
                ["roundrect_rratio", "0"], ["uuid", new_uuid()]])
     fp.append(["embedded_fonts", "no"])
@@ -300,6 +302,13 @@ def main():
     total += resize_tht_pads(hdr4, L.PAD_DIA)
     ks.dump_file(hdr4, os.path.join(LIBDIR, "PinHeader_1x04_P2.54mm_Vertical.kicad_mod"))
     written.append("PinHeader_1x04_P2.54mm_Vertical")
+
+    for n in (9, 10):
+        hdr = make_pin_header(n)
+        total += resize_tht_pads(hdr, L.PAD_DIA)
+        ks.dump_file(hdr, os.path.join(
+            LIBDIR, f"PinHeader_1x{n:02d}_P2.54mm_Vertical.kicad_mod"))
+        written.append(f"PinHeader_1x{n:02d}_P2.54mm_Vertical")
 
     wp = make_wire_pad()
     ks.dump_file(wp, os.path.join(LIBDIR, "WirePad_1x01.kicad_mod"))

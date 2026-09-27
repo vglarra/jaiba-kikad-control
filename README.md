@@ -238,6 +238,7 @@ runs. Run **Inspect → DRC** to see them as ratsnest.
 | `tools/make_teensy_footprint.py` | Generates `Teensy_4.1.kicad_mod` from PJRC's published dimensions. |
 | `tools/emit_board.py` | Writes the `.kicad_pcb` from the plan **without** KiCad. |
 | `tools/route_jumpers.py` | Pre-routes the wire jumpers onto B.Cu as a guide (see below). |
+| `tools/check_pour.py` | Measures whether a ground pour would actually connect (see below). |
 | `tools/preview_board.py` | Renders the board to an SVG so a floorplan change can be eyeballed without KiCad. |
 | `tools/verify_board.py` | DRC-style geometry checker (plan or emitted board). |
 | `tools/kicad_sexpr.py` | S-expression reader/writer, quote-preserving. |
@@ -449,6 +450,99 @@ Encoders are digital and use no ADC. If you switch to pots, the same headers wor
 — each pot wiper goes to one pin, 3V3 and GND come from `J_ENC_A`. **16 of the 26
 pins are analog-capable**, so there is no need for another multiplexer: the left
 Teensy's CD74HC4067 also still has **11 spare channels**, read over the UART.
+
+## The electrostatic shield
+
+The copper fill on F.Cu is tied to **GND** and acts as a coplanar shield and
+guard around the high-impedance piezo nodes.
+
+**It has to be grounded.** Floating copper is the opposite of a shield: it
+re-radiates and capacitively couples noise onto the very nodes it sits beside.
+So the zone carries the ground net and no fragment may be left floating —
+`island_removal_mode 2` makes KiCad drop any that reaches no ground pad.
+
+The fragmentation that rules the fill out as a ground *return path* is fine for
+a shield, because each piece only has to be grounded, not joined to the others:
+
+```
+SHIELD : 15 of 146 pour regions reach ground
+         292.81 cm2 of useful shield      (75% of the board)
+         4.52 cm2 floating -> removed     (1.2%, negligible)
+```
+
+Ground reaches each region through a thermal spoke from a ground pad, and those
+pads are being wired anyway — so the shield needs no extra connections. It also
+does some of that wiring for you: with the shield, ground forms 15 groups instead
+of 31, so relying on it would cut the ground wires from 31 to about 14. That is
+still the unpredictable road, so the board is built for the 31.
+
+Roughly three quarters of the board is also bare laminate, and every square
+millimetre of it is copper the etchant has to remove — so the shield shortens the
+etch as a side effect. Settings live at the top of `tools/emit_board.py`:
+clearance 0.40 mm (never tighter than the board's own 0.34 mm minimum feature),
+min thickness 0.50 mm so no unetchable slivers are left.
+
+> **The board file is written UNFILLED.** KiCad computes the fill itself, so
+> **press B (Fill All Zones) before plotting**, or F.Cu plots with no fill at
+> all. `verify_board.py` says so every time it runs.
+
+### What it is not
+
+A **coplanar** shield lies on the same layer as the traces, so it cannot block
+fields arriving from directly above them. It guards — it intercepts surface
+leakage and shrinks the pickup area around the nodes — but it is not a true
+planar shield.
+
+That needs a ground plane on **B.Cu**, which means a two-layer board. It would
+also eliminate the ground wiring and the whole jumper guide, because the routing
+could move to the second layer. That is a different board, not a tweak.
+
+The shield does add capacitance from the piezo node to ground. At the node's
+5 kΩ (10k ‖ 10k) and on the order of 20 pF of coupling that is a pole near
+1.6 MHz — three decades above audio, so it costs nothing in the signal band.
+
+### Why it is not a ground pour
+
+A pour looks like the obvious way to remove the ground jumpers. On a
+**single-sided** board it does not work, and `tools/check_pour.py` measures why
+rather than asserting it:
+
+```
+pour-able area : 261.4 cm2 of 390.0 cm2 (66.9%)
+pour regions   : 367  (largest 12710 mm2)
+thermal spokes : 263 pad-to-region links
+!! ground is SPLIT into 33 separate pieces
+   largest group: 40 of 92 ground pads
+```
+
+Every signal trace is a wall through the plane, and 596 of them partition it
+whatever the clearance. Modelling thermal spokes matters a great deal — a pad
+does not have to sit *in* the pour, a spoke crosses its clearance ring, and on a
+2.54 mm pitch with 2.2 mm pads that is the only way most pads ever connect. It
+took the count from 73 fragments down to 33, and no further.
+
+So a pour would have replaced 63 ground wires with roughly 32, **unpredictably**:
+there is no way to tell by eye which pads are already joined, and the fragments
+form parallel ground paths right beside the high-impedance piezo nodes.
+
+## Cutting the ground wiring in copper instead
+
+Each dual-layer cell has **three** ground points — the connector's GND (with its
+drum pad already stubbed to it), the piezo divider's GND, and the velostat
+pulldown's GND. A short F.Cu run joins all three, going the long way round
+because the pulldown's GND pad sits behind the piezo node with the psig feed
+running down that same column:
+
+```
+RV.2 ─┐
+      └─ x=3.4 down ── y=14 across ── R2.2 ── y=16.5 ── J.4
+```
+
+That takes ground from **63 wire connections to 31**. `3V3` is now the largest
+remaining item at **42**, because the diode's 3V3 pad at (9.46, 21) sits in a
+pocket: the psig feed runs across the cell at y=18.50 above it, the cell ends
+40 mm... at y=22.25 below it, and the drum stubs wall off the right-hand side.
+Joining it needs a cell re-layout rather than another trace.
 
 ## Open items
 

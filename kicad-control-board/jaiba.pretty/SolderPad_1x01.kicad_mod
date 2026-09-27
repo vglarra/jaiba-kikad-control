@@ -57,7 +57,7 @@
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "1039ab2b-3acf-4150-921a-3ccbc4733adb")
+		(uuid "40125cbb-8ee0-4e90-aad0-251419500d16")
 	)
 	(fp_line
 		(start 4.15 -1.2)
@@ -67,7 +67,7 @@
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "1d653e9a-c444-4e5d-bbec-b81962a682b7")
+		(uuid "b236d214-25ab-4261-a5de-718428723e22")
 	)
 	(fp_line
 		(start 4.15 1.2)
@@ -77,7 +77,7 @@
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "a31cc1c0-d02f-4946-b77f-84000a63ea51")
+		(uuid "4b37fe13-b074-4914-883b-8fd2b694d3c7")
 	)
 	(fp_line
 		(start -4.15 1.2)
@@ -87,14 +87,14 @@
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "3a60a3d7-d97c-4636-958c-ddca7e574440")
+		(uuid "690af44e-a68a-444b-84de-5863fcc35dcc")
 	)
 	(pad "1" smd rect
 		(at 0 0)
 		(size 8 2)
 		(layers "F.Cu" "F.Mask")
 		(roundrect_rratio 0)
-		(uuid "80ee567f-a258-478c-91b3-c217a28b6b93")
+		(uuid "d64a5e26-409a-4a06-94bc-f768d4fdbd30")
 	)
 	(embedded_fonts no)
 )

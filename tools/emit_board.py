@@ -28,6 +28,14 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LIBDIR = os.path.join(REPO, "kicad-control-board", "jaiba.pretty")
 DEFAULT_OUT = os.path.join(REPO, "kicad-control-board", "kicad-control-board.kicad_pcb")
 
+# Grounded fill acting as an electrostatic shield. FILL_CLEARANCE must be no
+# tighter than the board's own minimum feature (0.34 mm between adjacent 2.2 mm
+# pads at 2.54 mm pitch) or the shield creates gaps the etchant cannot resolve.
+FILL = True
+FILL_CLEARANCE = 0.40        # fill to foreign copper
+FILL_EDGE_CLEARANCE = 0.50   # fill to the board edge
+FILL_MIN_THICKNESS = 0.50    # narrower slivers than this are not worth etching
+
 # Board header (stackup, design rules, plot parameters), captured verbatim from
 # a board KiCad itself wrote. It is embedded rather than read back from the
 # output file so the emitter stays idempotent: treating the generated board as
@@ -294,6 +302,49 @@ def emit(plan, out_path):
                      ["stroke", ["width", fmt(L.EDGE_W)], ["type", "solid"]],
                      ["layer", ks.Quoted("Edge.Cuts")],
                      ["uuid", ks.Quoted(str(uuid.uuid4()))]])
+
+    # --- electrostatic shield ----------------------------------------------
+    # The fill is tied to GND and acts as a coplanar shield/guard around the
+    # high-impedance piezo nodes.
+    #
+    # It MUST be grounded. Floating copper is the opposite of a shield: it
+    # re-radiates and capacitively couples noise onto the very nodes it sits
+    # beside. So unlike a plain etch-saving fill, this carries the ground net
+    # and no island may be left floating -- hence island_removal_mode 2, which
+    # makes KiCad drop any fragment that reaches no ground pad.
+    #
+    # On a single-sided board the plane is carved into fragments by the ~600
+    # signal tracks (see tools/check_pour.py). For a shield that is acceptable
+    # so long as EVERY surviving fragment reaches ground; that is what the check
+    # verifies. Note this is a coplanar guard, not a true shield -- being on the
+    # same layer as the traces, it cannot block fields arriving from directly
+    # above them. A real planar shield needs a ground plane on B.Cu, which means
+    # a two-layer board.
+    #
+    # The file is written UNFILLED: KiCad computes the fill itself when the board
+    # is opened and B (Fill All Zones) is pressed. Without that, plotting F.Cu
+    # produces no fill, so the README says so in three places.
+    if FILL:
+        inset = FILL_EDGE_CLEARANCE
+        pts = [["xy", fmt(inset), fmt(inset)],
+               ["xy", fmt(plan["width"] - inset), fmt(inset)],
+               ["xy", fmt(plan["width"] - inset), fmt(plan["height"] - inset)],
+               ["xy", fmt(inset), fmt(plan["height"] - inset)]]
+        root.append(["zone",
+                     ["net", str(netnum["GND"])],
+                     ["net_name", ks.Quoted("GND")],
+                     ["layer", ks.Quoted("F.Cu")],
+                     ["uuid", ks.Quoted(str(uuid.uuid4()))],
+                     ["hatch", "edge", fmt(0.5)],
+                     ["connect_pads", ["clearance", fmt(FILL_CLEARANCE)]],
+                     ["min_thickness", fmt(FILL_MIN_THICKNESS)],
+                     ["filled_areas_thickness", "no"],
+                     ["fill", "yes",
+                      ["thermal_gap", fmt(FILL_CLEARANCE)],
+                      ["thermal_bridge_width", fmt(0.5)],
+                      ["island_removal_mode", "2"],
+                      ["island_area_min", "0"]],
+                     ["polygon", ["pts"] + pts]])
 
     root.append(["embedded_fonts", "no"])
 

@@ -374,11 +374,44 @@ def verify(placed, tracks, board_w, board_h, n_links=None):
     return issues
 
 
+def zone_report(path):
+    """Describe any copper fill, and whether it has been filled yet.
+
+    The emitter writes zones UNFILLED: KiCad computes the fill itself. A zone
+    with no filled_polygon plots as nothing, so an unfilled board is worth
+    shouting about rather than discovering after etching.
+    """
+    root = ks.parse(open(path, encoding="utf-8").read())
+    zones = ks.children(root, "zone")
+    if not zones:
+        return
+    for z in zones:
+        lay = ks.child(z, "layer")
+        net = ks.child(z, "net")
+        name = ks.child(z, "net_name")
+        clear = ks.child(z, "connect_pads")
+        gap = ks.child(clear, "clearance")[1] if clear else "?"
+        minth = ks.child(z, "min_thickness")
+        filled = ks.children(z, "filled_polygon")
+        want = "F.Cu"
+        print(f"copper fill     : layer {lay[1] if lay else '?'}"
+              f"{'' if lay and lay[1] == want else '  !! NOT the etched layer'}"
+              f", net {net[1] if net else '?'}"
+              f"{(chr(32) + name[1]) if name and name[1] else ''}"
+              f", clearance {gap}, min thickness {minth[1] if minth else '?'}")
+        if filled:
+            print(f"                  filled: {len(filled)} polygon(s)")
+        else:
+            print("                  UNFILLED -- press B (Fill All Zones) in KiCad")
+            print("                  before plotting, or F.Cu plots without it")
+
+
 def main():
     if len(sys.argv) > 1:
         placed, tracks, w, h, n = from_board(sys.argv[1])
         print(f"verifying {os.path.relpath(sys.argv[1], REPO) if sys.argv[1].startswith(REPO) else sys.argv[1]}")
         print()
+        zone_report(sys.argv[1])
     else:
         placed, tracks, w, h, n = from_plan()
         print("verifying the layout plan (jaiba_board_layout.py)")

@@ -191,6 +191,20 @@ def sensor_cell(ox, oy, cid, nets, mirrored=False):
             dict(x1=ox + 13.00, y1=oy + 12.00, x2=ox + 12.00, y2=oy + 12.00, net=nets["praw"]),
             dict(x1=ox + 1.84, y1=oy + 12.00, x2=ox + 1.84, y2=oy + 21.00, net=nets["psig"]),
             dict(x1=ox + 1.84, y1=oy + 18.50, x2=ox + 15.50, y2=oy + 18.50, net=nets["psig"]),
+            # Tie the cell's three ground points together in copper: the
+            # connector's GND (and its drum pad, already stubbed to it), the
+            # piezo divider's GND, and the velostat pulldown's GND. Without this
+            # each cell needs THREE separate ground wires -- 48 of the board's
+            # 63 in total. The run goes the long way round because the pulldown's
+            # GND pad sits behind the piezo node, with the psig feed running down
+            # that same column.
+            dict(x1=ox + 1.84, y1=oy + 4.54, x2=ox + 1.84, y2=oy + 6.50, net="GND"),
+            dict(x1=ox + 1.84, y1=oy + 6.50, x2=ox + 4.00, y2=oy + 6.50, net="GND"),
+            dict(x1=ox + 4.00, y1=oy + 6.50, x2=ox + 4.00, y2=oy + 14.00, net="GND"),
+            dict(x1=ox + 4.00, y1=oy + 14.00, x2=ox + 12.00, y2=oy + 14.00, net="GND"),
+            dict(x1=ox + 12.00, y1=oy + 14.00, x2=ox + 12.00, y2=oy + 16.50, net="GND"),
+            dict(x1=ox + 12.00, y1=oy + 16.50, x2=ox + 16.00, y2=oy + 16.50, net="GND"),
+            dict(x1=ox + 16.00, y1=oy + 16.50, x2=ox + 16.00, y2=oy + 9.62, net="GND"),
         ] + [dict(x1=ox + SOLDER_EXIT, y1=oy + y, x2=ox + SOLDER_OFFSET_X, y2=oy + y,
                   net=net) for y, net, _ in drum]
     else:

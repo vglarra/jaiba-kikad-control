@@ -62,15 +62,26 @@ N_ROW_B = 8           # SIG, S3, S2, S1, S0, EN, VCC, GND
 # ---------------------------------------------------------------------------
 VERIFIED = True
 
-# Measured printer scale: printed size / true size. A 50 mm calibration bar came
-# off the printer at 66 mm, so 66/50 = 1.32. (Close to 4/3 = 1.333, the classic
-# 96 dpi vs 72 dpi mismatch in a browser/print pipeline.)
+# Measured printer scale: printed size / true size, for THIS bench's browser
+# SVG path. Confirmed 2025-10-12 against the 100 mm bar on
+# calibration_1to1.svg: 1.3266 reads exactly 100 mm, and the Teensy pin span
+# matches a real header. See tools/make_calibration_sheet.py for the full
+# story, including the two-pipeline trap.
+#
+# This supersedes an earlier 1.32 measured from a 50 mm bar -- the same 96-vs-72
+# dpi browser enlargement, measured with a bar half as long. 1.3266 and 1.32
+# agree to 0.5%, so either works; prefer the longer bar.
 #
 # This is a property of one printer, not of the board, so it never affects the
 # footprint -- it only decides whether a paper check is meaningful. Leave at 1.0
 # to emit a true 1:1 sheet, or set it to your measured factor to also emit a
 # pre-compensated sheet that comes out correct on that printer.
-PRINTER_SCALE = 1.32
+PRINTER_SCALE = 1.3266
+
+# Length of the calibration bar drawn on the sheet, in true millimetres. A
+# longer bar resolves the factor better, so this matches the 100 mm bar used
+# everywhere else in the repo.
+BAR_LEN = 100.0
 
 MY_MODULE = dict(
     name="CD74HC4067_Module",
@@ -276,7 +287,7 @@ def emit_svg(m, path, compensate=1.0, label=""):
 
     `compensate` pre-divides the declared physical size so that a printer which
     scales by that factor produces a true-size sheet. The viewBox is untouched,
-    so the calibration bar stays 50 user units no matter what.
+    so the calibration bar stays BAR_LEN user units no matter what.
 
     Print with scaling OFF, lay the real module on the paper and confirm every
     pin drops into a hole.
@@ -287,8 +298,8 @@ def emit_svg(m, path, compensate=1.0, label=""):
     r_pad, r_drill = m["pad_dia"] / 2.0, m["drill"] / 2.0
     q = chr(34)
 
-    # Symmetric viewBox, wide enough for the 50 mm calibration bar below.
-    vw = max(L + 16.0, 56.0)
+    # Symmetric viewBox, wide enough for the calibration bar below.
+    vw = max(L + 16.0, BAR_LEN + 16.0)
     mt, mb = 10.0, 16.0
     vh = W + mt + mb
     vx, vy = -vw / 2.0, -half_w - mt
@@ -326,14 +337,16 @@ def emit_svg(m, path, compensate=1.0, label=""):
 
     # Calibration bar. Print dialogs silently rescale far more often than they
     # should, and a rescaled 1:1 sheet is worthless -- worse, it looks fine.
-    # Measuring this bar turns any printout into a self-checking one.
-    bar_len = 50.0
+    # Measuring this bar turns any printout into a self-checking one. 20 ticks
+    # (5 mm apart) because the bar is long enough to read that finely.
+    bar_len = BAR_LEN
     bar_y = half_w + 4.0
+    n_div = 20
     out.append(f'<line x1="{-bar_len / 2:.3f}" y1="{bar_y:.3f}" '
                f'x2="{bar_len / 2:.3f}" y2="{bar_y:.3f}" '
                'stroke="black" stroke-width="0.35"/>')
-    for k in range(6):
-        bx = -bar_len / 2 + k * bar_len / 5.0
+    for k in range(n_div + 1):
+        bx = -bar_len / 2 + k * bar_len / n_div
         out.append(f'<line x1="{bx:.3f}" y1="{bar_y - 1.5:.3f}" '
                    f'x2="{bx:.3f}" y2="{bar_y + 1.5:.3f}" '
                    'stroke="black" stroke-width="0.35"/>')
@@ -392,10 +405,10 @@ def main():
         print("wrote", os.path.relpath(fixed, REPO))
 
     print()
-    print("  PRINT AT 100% WITH SCALING OFF, then measure the 50 mm bar.")
-    print("  If the bar is not 50 mm, the print is not 1:1 and the fit test")
-    print("  means nothing -- set PRINTER_SCALE to (measured / 50) and re-run")
-    print("  to get a _printfix sheet. Once the bar reads 50 mm, lay the real")
+    print(f"  PRINT AT 100% WITH SCALING OFF, then measure the {BAR_LEN:.0f} mm bar.")
+    print(f"  If the bar is not {BAR_LEN:.0f} mm, the print is not 1:1 and the fit test")
+    print(f"  means nothing -- set PRINTER_SCALE to (measured / {BAR_LEN:.0f}) and re-run")
+    print(f"  to get a _printfix sheet. Once the bar reads {BAR_LEN:.0f} mm, lay the real")
     print("  module on the paper and check every pin drops into a hole.")
     print("  Then: place it in the plan, and run tools/verify_board.py")
     return 0

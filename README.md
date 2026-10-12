@@ -606,8 +606,12 @@ Joining it needs a cell re-layout rather than another trace.
       at exactly 38.10 mm and 17.78 mm, but `row_spacing` (14.9 mm measured, vs
       the 15.24 mm 0.1″-grid value) is still unconfirmed. Print
       `jaiba.pretty/CD74HC4067_Module_1to1_printfix.svg` at 100%, check the
-      50 mm bar, then lay the module on it. Fixing it is one constant in
-      `tools/make_module_footprint.py`; the board outline is unaffected.
+      100 mm bar, then lay the module on it — every pin must drop into a hole.
+      That sheet is now generated at the confirmed 1.3266 factor, so a correct
+      print needs no mental arithmetic; it carries a 100 mm bar, twice as long as
+      the 50 mm one it used to have, so it resolves the factor better. Fixing
+      `row_spacing` is one constant in `tools/make_module_footprint.py`; the
+      board outline is unaffected.
 - [ ] **There is no schematic.** `kicad-control-board.kicad_sch` is empty, so
       nets exist only in the PCB, there is no ERC, and "Update PCB from
       Schematic" would wipe the design.

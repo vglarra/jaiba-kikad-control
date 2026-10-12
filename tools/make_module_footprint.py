@@ -65,8 +65,10 @@ VERIFIED = True
 # Measured printer scale: printed size / true size, for THIS bench's browser
 # SVG path. Confirmed 2025-10-12 against the 100 mm bar on
 # calibration_1to1.svg: 1.3266 reads exactly 100 mm, and the Teensy pin span
-# matches a real header. See tools/make_calibration_sheet.py for the full
-# story, including the two-pipeline trap.
+# matches a real header. Re-confirmed independently on THIS sheet's own 100 mm
+# bar, so all three 1:1 sheets in the repo now agree on one factor. See
+# tools/make_calibration_sheet.py for the full story, including the
+# two-pipeline trap.
 #
 # This supersedes an earlier 1.32 measured from a 50 mm bar -- the same 96-vs-72
 # dpi browser enlargement, measured with a bar half as long. 1.3266 and 1.32

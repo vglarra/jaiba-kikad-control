@@ -29,10 +29,12 @@ produces a sheet that comes out true on that printer.
 
 Measured on this project's bench -- TWO pipelines, opposite factors
 ------------------------------------------------------------------
-CONFIRMED. The browser SVG path enlarges by **1.3266**; both 1:1 sheets in this
-repo are generated at that factor, and the 100 mm bar measures exactly 100 mm
-with the Teensy pin span matching a real header (58.40-58.50 mm vs the 58.42 mm
-design span).
+CONFIRMED. The browser SVG path enlarges by **1.3266**. All three 1:1 sheets in
+the repo are generated at that factor and each has been checked on its own
+100 mm bar: this ruler, teensy_fit_gauge.svg, and the module's
+CD74HC4067_Module_1to1_printfix.svg. The bar measures exactly 100 mm on all of
+them, and the Teensy pin span matches a real header (58.40-58.50 mm against the
+58.42 mm design span).
 
 The SVG tools in this file and make_teensy_fit_gauge.py print through a
 **browser**, and a browser printing an SVG whose root size is declared in

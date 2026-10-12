@@ -576,9 +576,11 @@ Joining it needs a cell re-layout rather than another trace.
       trustworthy. Through the browser SVG path the bench enlarges by **1.3266**
       (the classic 96-vs-72 dpi mismatch): the sheet's own 100 mm bar came off at
       134 mm, then 99 mm once over-corrected at 1.34, and at **1.3266 it reads
-      exactly 100 mm with the Teensy pin span matching a real header.** Both
-      `jaiba.pretty/calibration_1to1.svg` and `jaiba.pretty/teensy_fit_gauge.svg`
-      are generated at that factor:
+      exactly 100 mm with the Teensy pin span matching a real header.** All three
+      1:1 sheets are generated at that factor and each has since been confirmed on
+      its *own* 100 mm bar — `jaiba.pretty/calibration_1to1.svg`,
+      `jaiba.pretty/teensy_fit_gauge.svg`, and the module's
+      `jaiba.pretty/CD74HC4067_Module_1to1_printfix.svg`:
       `python3 tools/make_calibration_sheet.py 1.3266`.
       Notes that matter for the next person:
       * The factor is the *pipeline's* own ratio (printed/true), not the
@@ -589,8 +591,11 @@ Joining it needs a cell re-layout rather than another trace.
         sheet and the board through the same one, and re-measure the bar rather
         than reusing a factor.
       * 1.3266 is within 0.5 % of the `PRINTER_SCALE = 1.32` that
-        `tools/make_module_footprint.py` has carried from a 50 mm bar. Same
-        effect, two independent measurements.
+        `tools/make_module_footprint.py` carried from a 50 mm bar. Same effect,
+        two independent measurements; the longer bar wins, and the tool now uses
+        1.3266 with a 100 mm bar so the two cannot drift apart again.
+      * Every sheet carries its own bar for a reason: a wrong factor looks
+        perfect. Re-measure it on each new print rather than trusting the file.
 - [x] **Teensy pad span — RESOLVED, no change made.** The real 24-pin header
       measures 58.40–58.50 mm and the design is 58.42 mm (2.54 mm pitch × 23):
       they agree, and once the print was compensated the row matched the real
@@ -604,14 +609,17 @@ Joining it needs a cell re-layout rather than another trace.
 - [ ] **Verify the module footprint before ordering.** `CD74HC4067_Module`
       is generated from caliper measurements; the two pin spans were confirmed
       at exactly 38.10 mm and 17.78 mm, but `row_spacing` (14.9 mm measured, vs
-      the 15.24 mm 0.1″-grid value) is still unconfirmed. Print
-      `jaiba.pretty/CD74HC4067_Module_1to1_printfix.svg` at 100%, check the
-      100 mm bar, then lay the module on it — every pin must drop into a hole.
-      That sheet is now generated at the confirmed 1.3266 factor, so a correct
-      print needs no mental arithmetic; it carries a 100 mm bar, twice as long as
-      the 50 mm one it used to have, so it resolves the factor better. Fixing
-      `row_spacing` is one constant in `tools/make_module_footprint.py`; the
-      board outline is unaffected.
+      the 15.24 mm 0.1″-grid value) is still unconfirmed. The blocking
+      precondition is now cleared: `jaiba.pretty/CD74HC4067_Module_1to1_printfix.svg`
+      is generated at the confirmed 1.3266 factor and **its own 100 mm bar has
+      been measured at exactly 100 mm with calipers**, so a reading taken off that
+      sheet means something. What remains is the physical test — lay the real
+      module on the sheet and check every pin drops into a hole. If it does,
+      `row_spacing = 14.9` is real and the footprint ships as built; if the rows
+      sit wide or narrow, it is one constant in `tools/make_module_footprint.py`
+      (the 0.1″-grid value is 15.24). Either way the board outline is unaffected.
+      Note this is the last geometry question in the project that paper can
+      settle, so it is worth doing before the sheet goes stale.
 - [ ] **There is no schematic.** `kicad-control-board.kicad_sch` is empty, so
       nets exist only in the PCB, there is no ERC, and "Update PCB from
       Schematic" would wipe the design.

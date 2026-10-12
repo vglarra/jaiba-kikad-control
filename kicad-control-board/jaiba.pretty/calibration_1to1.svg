@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="105.5329mm" height="131.9162mm" viewBox="0 0 140.0000 175.0000">
+<g font-family="monospace" font-size="3.2" fill="black">
+<text x="8" y="12.000" font-size="5.0">1:1 CALIBRATION SHEET</text>
+<text x="8" y="19.500" font-size="3.2">print at 100%, scaling OFF, A4, no fit-to-page</text>
+<text x="8" y="25.200" font-size="3.2">then measure the bars below before trusting any paper check</text>
+<text x="8" y="34.900" font-size="4">MEASURE THESE. EACH MUST MATCH ITS LABEL EXACTLY.</text>
+<text x="8" y="42.100">10 mm</text>
+<line x1="30.0000" y1="40.9000" x2="40.0000" y2="40.9000" stroke="black" stroke-width="0.4"/>
+<line x1="30.0000" y1="37.9000" x2="30.0000" y2="43.9000" stroke="black" stroke-width="0.4"/>
+<line x1="40.0000" y1="37.9000" x2="40.0000" y2="43.9000" stroke="black" stroke-width="0.4"/>
+<line x1="40.0000" y1="39.1000" x2="40.0000" y2="42.7000" stroke="black" stroke-width="0.4"/>
+<text x="8" y="53.100">25.4 mm</text>
+<line x1="30.0000" y1="51.9000" x2="55.4000" y2="51.9000" stroke="black" stroke-width="0.4"/>
+<line x1="30.0000" y1="48.9000" x2="30.0000" y2="54.9000" stroke="black" stroke-width="0.4"/>
+<line x1="55.4000" y1="48.9000" x2="55.4000" y2="54.9000" stroke="black" stroke-width="0.4"/>
+<line x1="40.0000" y1="50.1000" x2="40.0000" y2="53.7000" stroke="black" stroke-width="0.4"/>
+<line x1="50.0000" y1="50.1000" x2="50.0000" y2="53.7000" stroke="black" stroke-width="0.4"/>
+<text x="8" y="64.100">50 mm</text>
+<line x1="30.0000" y1="62.9000" x2="80.0000" y2="62.9000" stroke="black" stroke-width="0.4"/>
+<line x1="30.0000" y1="59.9000" x2="30.0000" y2="65.9000" stroke="black" stroke-width="0.4"/>
+<line x1="80.0000" y1="59.9000" x2="80.0000" y2="65.9000" stroke="black" stroke-width="0.4"/>
+<line x1="40.0000" y1="61.1000" x2="40.0000" y2="64.7000" stroke="black" stroke-width="0.4"/>
+<line x1="50.0000" y1="61.1000" x2="50.0000" y2="64.7000" stroke="black" stroke-width="0.4"/>
+<line x1="60.0000" y1="61.1000" x2="60.0000" y2="64.7000" stroke="black" stroke-width="0.4"/>
+<line x1="70.0000" y1="61.1000" x2="70.0000" y2="64.7000" stroke="black" stroke-width="0.4"/>
+<line x1="80.0000" y1="61.1000" x2="80.0000" y2="64.7000" stroke="black" stroke-width="0.4"/>
+<text x="8" y="75.100">100 mm</text>
+<line x1="30.0000" y1="73.9000" x2="130.0000" y2="73.9000" stroke="black" stroke-width="0.4"/>
+<line x1="30.0000" y1="70.9000" x2="30.0000" y2="76.9000" stroke="black" stroke-width="0.4"/>
+<line x1="130.0000" y1="70.9000" x2="130.0000" y2="76.9000" stroke="black" stroke-width="0.4"/>
+<line x1="40.0000" y1="72.1000" x2="40.0000" y2="75.7000" stroke="black" stroke-width="0.4"/>
+<line x1="50.0000" y1="72.1000" x2="50.0000" y2="75.7000" stroke="black" stroke-width="0.4"/>
+<line x1="60.0000" y1="72.1000" x2="60.0000" y2="75.7000" stroke="black" stroke-width="0.4"/>
+<line x1="70.0000" y1="72.1000" x2="70.0000" y2="75.7000" stroke="black" stroke-width="0.4"/>
+<line x1="80.0000" y1="72.1000" x2="80.0000" y2="75.7000" stroke="black" stroke-width="0.4"/>
+<line x1="90.0000" y1="72.1000" x2="90.0000" y2="75.7000" stroke="black" stroke-width="0.4"/>
+<line x1="100.0000" y1="72.1000" x2="100.0000" y2="75.7000" stroke="black" stroke-width="0.4"/>
+<line x1="110.0000" y1="72.1000" x2="110.0000" y2="75.7000" stroke="black" stroke-width="0.4"/>
+<line x1="120.0000" y1="72.1000" x2="120.0000" y2="75.7000" stroke="black" stroke-width="0.4"/>
+<line x1="130.0000" y1="72.1000" x2="130.0000" y2="75.7000" stroke="black" stroke-width="0.4"/>
+<text x="8" y="86.900" font-size="4">THIS BAR MUST MEASURE EXACTLY 50 mm</text>
+<line x1="30.0000" y1="91.9000" x2="80.0000" y2="91.9000" stroke="black" stroke-width="0.5"/>
+<line x1="30.0000" y1="89.4000" x2="30.0000" y2="94.4000" stroke="black" stroke-width="0.5"/>
+<line x1="40.0000" y1="89.4000" x2="40.0000" y2="94.4000" stroke="black" stroke-width="0.5"/>
+<line x1="50.0000" y1="89.4000" x2="50.0000" y2="94.4000" stroke="black" stroke-width="0.5"/>
+<line x1="60.0000" y1="89.4000" x2="60.0000" y2="94.4000" stroke="black" stroke-width="0.5"/>
+<line x1="70.0000" y1="89.4000" x2="70.0000" y2="94.4000" stroke="black" stroke-width="0.5"/>
+<line x1="80.0000" y1="89.4000" x2="80.0000" y2="94.4000" stroke="black" stroke-width="0.5"/>
+<text x="8" y="103.900" font-size="4">HEADER GAUGE: lay the real header on this, pins must land on every tick</text>
+<line x1="30.0000" y1="105.9000" x2="30.0000" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="32.5400" y1="105.9000" x2="32.5400" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="35.0800" y1="105.9000" x2="35.0800" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="37.6200" y1="105.9000" x2="37.6200" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="40.1600" y1="105.9000" x2="40.1600" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="42.7000" y1="105.9000" x2="42.7000" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="45.2400" y1="105.9000" x2="45.2400" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="47.7800" y1="105.9000" x2="47.7800" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="50.3200" y1="105.9000" x2="50.3200" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="52.8600" y1="105.9000" x2="52.8600" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="55.4000" y1="105.9000" x2="55.4000" y2="111.9000" stroke="black" stroke-width="0.4"/>
+<line x1="30.0000" y1="104.4000" x2="55.4000" y2="104.4000" stroke="black" stroke-width="0.2"/>
+<text x="59.4000" y="110.1000" font-size="3.2">10 x 2.54 = 25.40 mm</text>
+<text x="8" y="118.900" font-size="4">10-PITCH CHECK: put the real header here, then measure the same way you measured it before</text>
+<line x1="30.0000" y1="120.9000" x2="30.0000" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="32.5400" y1="120.9000" x2="32.5400" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="35.0800" y1="120.9000" x2="35.0800" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="37.6200" y1="120.9000" x2="37.6200" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="40.1600" y1="120.9000" x2="40.1600" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="42.7000" y1="120.9000" x2="42.7000" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="45.2400" y1="120.9000" x2="45.2400" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="47.7800" y1="120.9000" x2="47.7800" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="50.3200" y1="120.9000" x2="50.3200" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="52.8600" y1="120.9000" x2="52.8600" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="55.4000" y1="120.9000" x2="55.4000" y2="128.9000" stroke="black" stroke-width="0.4"/>
+<line x1="30.0000" y1="118.4000" x2="55.4000" y2="118.4000" stroke="black" stroke-width="0.5"/>
+<line x1="30.0000" y1="118.4000" x2="30.0000" y2="120.3000" stroke="black" stroke-width="0.5"/>
+<line x1="55.4000" y1="118.4000" x2="55.4000" y2="120.3000" stroke="black" stroke-width="0.5"/>
+<text x="28.0000" y="116.9000" text-anchor="end" font-size="3.2">centre to centre = 25.40 mm</text>
+<line x1="29.6800" y1="131.4000" x2="55.7200" y2="131.4000" stroke="black" stroke-width="0.5"/>
+<text x="28.0000" y="135.4000" text-anchor="end" font-size="3.2">outer edge to outer edge = 26.04 mm (with 0.64 mm posts)</text>
+<text x="8" y="140.900" font-size="4">REFERENCE DIMENSIONS FROM THE BOARD FILE</text>
+<text x="8" y="146.400">Teensy 4.1 one pin row, first to last pad</text>
+<text x="112" y="146.400" text-anchor="end">58.42 mm</text>
+<text x="8" y="150.900">Teensy 4.1 row 1 to row 2</text>
+<text x="112" y="150.900" text-anchor="end">15.24 mm</text>
+<text x="8" y="155.400">Pin header pitch</text>
+<text x="112" y="155.400" text-anchor="end">2.54 mm</text>
+<text x="8" y="162.900" font-size="3.2">Board outline is 150.00 x 260.00 mm (too big for one A4 sheet -- this sheet is the ruler, not the board).</text>
+</g></svg>

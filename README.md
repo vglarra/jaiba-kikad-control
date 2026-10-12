@@ -122,6 +122,10 @@ by the Teensy and move only the connector out to the edge.
   (0.7" is the *board width*, not the row pitch — an earlier revision used
   17.78 mm as `ROW_GAP` and the sockets could not line up with a real Teensy.)
 * Power buses run the full height at x = 66 mm (3V3) and x = 71 mm (GND).
+  Neither bar is tapped by any track or pad — they are hand-soldered jumper
+  rails, and the ground connection is the F.Cu pour. The channel they sit in is
+  bounded by the wire-pad fan at x = 64.81 on the left and the sensor front-ends
+  at 78.79 on the right, so a future move anywhere in 73–78 is clear.
 * Mounting holes at 6 mm in from each corner.
 
 ## Sensor front-ends
@@ -236,6 +240,9 @@ runs. Run **Inspect → DRC** to see them as ratsnest.
 | `kicad-control-board/*.kicad_pcb` | Generated board (150 × 260 mm, 281 footprints, 612 pads). |
 | `tools/make_library.py` | Rebuilds `jaiba.pretty/` by lifting footprints out of the board. |
 | `tools/make_teensy_footprint.py` | Generates `Teensy_4.1.kicad_mod` from PJRC's published dimensions. |
+| `tools/make_module_footprint.py` | Generates `CD74HC4067_Module.kicad_mod` from caliper measurements, plus its 1:1 check sheet. |
+| `tools/make_calibration_sheet.py` | Emits `calibration_1to1.svg` — the ruler that proves a print really is 1:1. |
+| `tools/make_teensy_fit_gauge.py` | Emits `teensy_fit_gauge.svg` — nominal Teensy pin rows to lay the real part on. |
 | `tools/emit_board.py` | Writes the `.kicad_pcb` from the plan **without** KiCad. |
 | `tools/route_jumpers.py` | Pre-routes the wire jumpers onto B.Cu as a guide (see below). |
 | `tools/check_pour.py` | Measures whether a ground pour would actually connect (see below). |
@@ -485,6 +492,12 @@ min thickness 0.50 mm so no unetchable slivers are left.
 > **The board file is written UNFILLED.** KiCad computes the fill itself, so
 > **press B (Fill All Zones) before plotting**, or F.Cu plots with no fill at
 > all. `verify_board.py` says so every time it runs.
+>
+> The committed `.kicad_pcb` *does* carry a filled pour, and a stored fill goes
+> stale the moment geometry moves: the polygons still hold the clearance slot
+> around wherever a track used to be. A stale fill around a *foreign* net's
+> copper is a short, not a gap — which is exactly why the B press is not
+> optional after any layout edit.
 
 ### What it is not
 
@@ -559,6 +572,35 @@ Joining it needs a cell re-layout rather than another trace.
 - [ ] **UI firmware only reads `Serial1`.** `Serial3` appears nowhere in either
       firmware, so the left-hemisphere link is dead copper until the UI reads
       it and merges two sensor streams.
+- [x] **Printer measured and compensated — DONE.** The paper check is now
+      trustworthy. Through the browser SVG path the bench enlarges by **1.3266**
+      (the classic 96-vs-72 dpi mismatch): the sheet's own 100 mm bar came off at
+      134 mm, then 99 mm once over-corrected at 1.34, and at **1.3266 it reads
+      exactly 100 mm with the Teensy pin span matching a real header.** Both
+      `jaiba.pretty/calibration_1to1.svg` and `jaiba.pretty/teensy_fit_gauge.svg`
+      are generated at that factor:
+      `python3 tools/make_calibration_sheet.py 1.3266`.
+      Notes that matter for the next person:
+      * The factor is the *pipeline's* own ratio (printed/true), not the
+        correction — the emitter divides by it. Get the direction wrong and the
+        error doubles instead of cancelling.
+      * The board via KiCad → PDF → viewer is a **different** pipeline that
+        *shrinks* (measured 0.9957 from a 58.42 → 58.15 mm row). Print the check
+        sheet and the board through the same one, and re-measure the bar rather
+        than reusing a factor.
+      * 1.3266 is within 0.5 % of the `PRINTER_SCALE = 1.32` that
+        `tools/make_module_footprint.py` has carried from a 50 mm bar. Same
+        effect, two independent measurements.
+- [x] **Teensy pad span — RESOLVED, no change made.** The real 24-pin header
+      measures 58.40–58.50 mm and the design is 58.42 mm (2.54 mm pitch × 23):
+      they agree, and once the print was compensated the row matched the real
+      header exactly. Every apparent discrepancy along the way (59.2, 59.3) was
+      the paper or the caliper convention — a standard 0.64 mm post row measures
+      58.42 mm centre-to-centre but 59.06 mm outer-edge-to-outer-edge. Widening
+      the pads to chase a print was the wrong fix and would have produced a
+      footprint a real Teensy no longer fits (a 58.90 mm span implies a 2.561 mm
+      pitch), because `TEENSY_PITCH` also drives the UART and mux landing-pad
+      fans and the pitch-aligned TFT header. Fix the paper, not the copper.
 - [ ] **Verify the module footprint before ordering.** `CD74HC4067_Module`
       is generated from caliper measurements; the two pin spans were confirmed
       at exactly 38.10 mm and 17.78 mm, but `row_spacing` (14.9 mm measured, vs
